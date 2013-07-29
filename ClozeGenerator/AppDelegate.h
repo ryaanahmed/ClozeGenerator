@@ -15,14 +15,17 @@
 }
 
 @property (assign) IBOutlet NSWindow *window;
+@property (assign) IBOutlet NSMenu *menubar;
+
 @property (weak) IBOutlet NSButton *addCloze;
 @property (weak) IBOutlet NSButton *export;
 @property (unsafe_unretained) IBOutlet NSTextView *textView;
 @property (weak) IBOutlet NSTableView *clozeList;
 @property (weak) IBOutlet NSButton *removeButton;
 
+
 - (IBAction) addCloze:(id)sender;
 - (IBAction) exportAll:(id)sender;
-- (IBAction)removeCloze:(id)sender;
+- (IBAction) removeCloze:(id)sender;
 
 @end

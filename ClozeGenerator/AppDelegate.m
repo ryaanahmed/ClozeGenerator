@@ -30,8 +30,10 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
 
 - (IBAction) addCloze:(id)sender
 {
-    NSString *clozeSentence = [_textView.string stringByReplacingCharactersInRange:[_textView selectedRange] withString:@"..."];
-    NSString *clozeAnswer = [_textView.string substringWithRange:[_textView selectedRange]];
+    NSString *strippedString = [_textView.string stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+
+    NSString *clozeSentence = [strippedString stringByReplacingCharactersInRange:[_textView selectedRange] withString:@"..."];
+    NSString *clozeAnswer = [strippedString substringWithRange:[_textView selectedRange]];
     
     NSArray *cloze = @[clozeSentence, clozeAnswer];
     
@@ -55,7 +57,25 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
         output = [[output stringByAppendingString:(NSString *)totalCloze] stringByAppendingString:@"\n\n"];
     }
     
-    [output writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    NSFileHandle *fh = [NSFileHandle fileHandleForWritingAtPath:path];
+
+    if(!fh)
+    {
+        [[NSFileManager defaultManager] createFileAtPath:path contents:nil attributes:nil];
+        fh = [NSFileHandle fileHandleForWritingAtPath:path];
+    }
+
+    @try
+    {
+        [fh seekToEndOfFile];
+        [fh writeData:[output dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    
+    @catch (NSException *e) {}
+    
+    [fh closeFile];
+    
+//    [output writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
     
     [[NSPasteboard generalPasteboard] clearContents];
     NSArray *copiedObjects = [NSArray arrayWithObject:output];
